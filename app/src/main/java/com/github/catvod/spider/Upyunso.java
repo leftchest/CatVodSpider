@@ -1,19 +1,10 @@
 package com.github.catvod.spider;
 
 import android.content.Context;
-import android.util.Base64;
 
 import com.github.catvod.crawler.Spider;
+import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
-
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,9 +13,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Upyunso extends Spider {
-    private PushAgent pushAgent;
+    private Push Push;
     private static String siteUrl = "https://www.upyunso.com/";
     private static String apiUrl = "https://api.upyunso.com/";
     private static Pattern aliyun = Pattern.compile("(https:\\/\\/www.aliyundrive.com\\/s\\/[^\\\"]+)");
@@ -32,8 +29,8 @@ public class Upyunso extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        pushAgent = new PushAgent();
-        pushAgent.init(context, extend);
+        Push = new Push();
+        Push.init(context, extend);
     }
 
     @Override
@@ -41,7 +38,7 @@ public class Upyunso extends Spider {
         try {
             Pattern pattern = aliyun;
             if (pattern.matcher(list.get(0)).find()) {
-                return pushAgent.detailContent(list);
+                return Push.detailContent(list);
             }
             String jqurl=(apiUrl+list.get(0)).replace(".html","");
             String jxUrl=new String(Base64.decode(OkHttpUtil.string(jqurl, sHeaders()), Base64.DEFAULT));
@@ -51,7 +48,7 @@ public class Upyunso extends Spider {
                 return "";
             }
             list.set(0, matcher.group(1).replaceAll("\\\\", ""));
-            return pushAgent.detailContent(list);
+            return Push.detailContent(list);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
@@ -60,7 +57,7 @@ public class Upyunso extends Spider {
 
     @Override
     public String playerContent(String str, String str2, List<String> list) {
-        return pushAgent.playerContent(str, str2, list);
+        return Push.playerContent(str, str2, list);
     }
 
 //    protected static HashMap<String, String> Headers() {
